@@ -23,7 +23,7 @@ namespace SpaceShooter.Runtime.Core
             _camera = Camera.main;
         }
 
-        public void Initialize(ObjectPool ownerPool = null)
+        public void Initialize(ObjectPool ownerPool)
         {
             _ownerPool = ownerPool;
 
@@ -47,10 +47,7 @@ namespace SpaceShooter.Runtime.Core
                 _rb.linearVelocity = Vector2.zero;
                 _rb.angularVelocity = 0f;
 
-                if (_ownerPool != null)
-                    _ownerPool.Release(gameObject);
-                else
-                    gameObject.SetActive(false);
+                _ownerPool.Release(gameObject);
             }
         }
     }

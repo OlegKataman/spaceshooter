@@ -59,7 +59,7 @@ namespace SpaceShooter.Runtime.Core
 
             // Инициализируем компонент движения
             if (asteroid.TryGetComponent<AsteroidMover>(out var mover))
-                mover.Initialize();
+                mover.Initialize(pool);
         }
     }
 }
