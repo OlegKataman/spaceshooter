@@ -9,10 +9,10 @@ namespace Develop.Runtime.SDK.Analytics
 {
     public sealed class AnalyticsFacade
     {
-        private readonly Dictionary<AnalyticsTarget, IAnalyticsService> _services;
+        private readonly Dictionary<AnalyticsTarget, IAnalyticsProvider> _services;
         private readonly Dictionary<AnalyticsEvent, EventBinding> _bindings;
 
-        public AnalyticsFacade(IEnumerable<IAnalyticsService> services, AnalyticsEventTemplate template)
+        public AnalyticsFacade(IEnumerable<IAnalyticsProvider> services, AnalyticsEventTemplate template)
         {
             _services = services.ToDictionary(s => s.Target);
             _bindings = template.Events.ToDictionary(e => e.EventType);

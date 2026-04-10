@@ -7,14 +7,14 @@ using UnityEngine;
 
 namespace Develop.Runtime.SDK.Analytics
 {
-    public sealed class MetaAnalyticsService : IAnalyticsService
+    public sealed class MetaAnalyticsProvider : IAnalyticsProvider
     {
         public AnalyticsTarget Target => AnalyticsTarget.Meta;
         public bool IsInitialized { get; private set; }
 
         private readonly string _appId;
 
-        public MetaAnalyticsService(SdkSettingsConfig settings)
+        public MetaAnalyticsProvider(SdkSettingsConfig settings)
         {
             _appId = settings.MetaAppId;
         }

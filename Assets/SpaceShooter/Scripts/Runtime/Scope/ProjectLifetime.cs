@@ -23,9 +23,9 @@ namespace SpaceShooter.Runtime.Scope
             builder.RegisterInstance(_sdkSettings).As<SdkSettingsConfig>();
             
             // Analytics
-            builder.Register<IAnalyticsService, FirebaseAnalyticsService>(Lifetime.Singleton);
-            builder.Register<IAnalyticsService, AdjustAnalyticsService>(Lifetime.Singleton);
-            builder.Register<IAnalyticsService, MetaAnalyticsService>(Lifetime.Singleton);
+            builder.Register<IAnalyticsProvider, FirebaseAnalyticsProvider>(Lifetime.Singleton);
+            builder.Register<IAnalyticsProvider, AdjustAnalyticsProvider>(Lifetime.Singleton);
+            builder.Register<IAnalyticsProvider, MetaAnalyticsProvider>(Lifetime.Singleton);
             
             builder.RegisterInstance(_template).As<AnalyticsEventTemplate>();
             builder.Register<AnalyticsFacade>(Lifetime.Singleton);

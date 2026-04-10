@@ -5,7 +5,7 @@ using Develop.Runtime.SDK.Config;
 
 namespace Develop.Runtime.SDK.Analytics
 {
-    public interface IAnalyticsService
+    public interface IAnalyticsProvider
     {
         AnalyticsTarget Target { get; }
         bool IsInitialized { get; }

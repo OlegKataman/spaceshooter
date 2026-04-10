@@ -7,14 +7,14 @@ using UnityEngine;
 
 namespace Develop.Runtime.SDK.Analytics
 {
-    public sealed class AdjustAnalyticsService : IAnalyticsService
+    public sealed class AdjustAnalyticsProvider : IAnalyticsProvider
     {
         public AnalyticsTarget Target => AnalyticsTarget.Adjust;
         public bool IsInitialized { get; private set; }
         
         private readonly string _appToken;
 
-        public AdjustAnalyticsService(SdkSettingsConfig settings)
+        public AdjustAnalyticsProvider(SdkSettingsConfig settings)
         {
             _appToken = settings.AdjustAppToken;
         }

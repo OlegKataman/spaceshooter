@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Develop.Runtime.SDK.Analytics
 {
-    public sealed class FirebaseAnalyticsService : IAnalyticsService
+    public sealed class FirebaseAnalyticsProvider : IAnalyticsProvider
     {
         public AnalyticsTarget Target => AnalyticsTarget.Firebase;
         public bool IsInitialized { get; private set; }
