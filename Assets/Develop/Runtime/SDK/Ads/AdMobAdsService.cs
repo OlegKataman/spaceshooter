@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Develop.Runtime.SDK.Ads
 {
-    public sealed class AdMobMediationService : IAdsService, IDisposable
+    public sealed class AdMobAdsService : IAdsService, IDisposable
     {
         public bool IsInitialized { get; private set; }
         public bool IsInterstitialReady => _interstitialAd != null && _interstitialAd.CanShowAd();
@@ -15,7 +15,7 @@ namespace Develop.Runtime.SDK.Ads
         private readonly string _interstitialId;
         private InterstitialAd _interstitialAd;
 
-        public AdMobMediationService(SdkSettingsConfig settings)
+        public AdMobAdsService(SdkSettingsConfig settings)
         {
             _interstitialId = settings.AdMobInterstitialId;
         }
