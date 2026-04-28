@@ -23,12 +23,11 @@ namespace Develop.Runtime.SDK.Analytics
         {
             try
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: cancellationToken);
+                await UniTask.NextFrame();
                 
                 // AudienceNetwork.AdSettings.SetAdvertiserTrackingEnabled(true);
 
                 IsInitialized = true;
-                Debug.Log("[Meta] Initialized");
             }
             catch (Exception e)
             {
@@ -36,7 +35,7 @@ namespace Develop.Runtime.SDK.Analytics
             }
         }
         
-        public void LogEvent(string eventName, Dictionary<string, object> parameters = null)
+        public void LogEvent(string eventName, params AnalyticsParam[] parameters)
         {
             if (!IsInitialized)
             {
@@ -46,20 +45,23 @@ namespace Develop.Runtime.SDK.Analytics
 
             try
             {
-                // var metaParams = new Dictionary<string, object>();
-        
-                // if (parameters != null)
-                //     foreach (var p in parameters)
-                //         metaParams[p.Key] = p.Value;
-        
-                // FB.LogAppEvent(eventName, parameters: metaParams);
-
                 Debug.Log($"[Meta] Event: {eventName}");
+                
+                Dictionary<string, object> data = null;
 
-                if (parameters == null) return;
+                if (parameters != null && parameters.Length > 0)
+                {
+                    data = new Dictionary<string, object>();
 
-                foreach (var p in parameters)
-                    Debug.Log($"  {p.Key}: {p.Value}");
+                    foreach (var p in parameters)
+                    {
+                        data[p.key] = p.ToString();
+                        
+                        Debug.Log($"  {p.key}: {p.ToString()}");
+                    }
+                }
+
+                // FB.LogAppEvent(eventName, null, data);
             }
             catch (Exception e)
             {

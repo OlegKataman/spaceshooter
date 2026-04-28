@@ -1,9 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Develop.Runtime.SDK.Config;
+using Firebase;
+using Firebase.Analytics;
 using UnityEngine;
 
 namespace Develop.Runtime.SDK.Analytics
@@ -17,22 +18,20 @@ namespace Develop.Runtime.SDK.Analytics
         {
             try
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: cancellationToken);
+                await UniTask.NextFrame();
                 
-                /*
                 var status = await FirebaseApp.CheckAndFixDependenciesAsync();
 
                 if (status != DependencyStatus.Available)
                 {
-                    Debug.LogError($"[Firebase] Dependency check failed: {status}");
+                    Debug.LogWarning($"[Firebase] Dependency status: {status}");
                     return;
                 }
 
                 FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
-                FirebaseAnalytics.SetSessionTimeoutDuration(TimeSpan.FromMinutes(30));*/
+                FirebaseAnalytics.SetSessionTimeoutDuration(TimeSpan.FromMinutes(30));
                 
                 IsInitialized = true;
-                Debug.Log("[Firebase] Initialized");
             }
             catch (Exception e)
             {
@@ -40,35 +39,30 @@ namespace Develop.Runtime.SDK.Analytics
             }
         }
         
-        public void LogEvent(string eventName, Dictionary<string, object> parameters = null)
+        public void LogEvent(string eventName, params AnalyticsParam[] parameters)
         {
             if (!IsInitialized)
+                return;
+            
+            Debug.Log($"[Firebase] Event: {eventName}");
+
+            if (parameters == null || parameters.Length == 0)
             {
-                Debug.LogWarning("[Firebase] Not initialized, skipping event");
+                FirebaseAnalytics.LogEvent(eventName);
                 return;
             }
 
-            try
+            var data = parameters.Select(p => p.type switch
             {
-                /*
-                if (parameters == null)
-                {
-                    FirebaseAnalytics.LogEvent(eventName);
-                }
-                else
-                {
-                    // Firebase SDK очікує Parameter[] — конвертуємо словник
-                    var firebaseParams = parameters
-                        .Select(p => new Parameter(p.Key, p.Value.ToString()))
-                        .ToArray();
+                ParamType.Long   => new Parameter(p.key, p.AsLong()),
+                ParamType.Double => new Parameter(p.key, p.AsDouble()),
+                _                => new Parameter(p.key, p.AsString())
+            }).ToArray();
+            
+            foreach (var p in parameters)
+                Debug.Log($"  {p.key}: {p.ToString()}");
 
-                    FirebaseAnalytics.LogEvent(eventName, firebaseParams);
-                }*/
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[Firebase] LogEvent failed: {e}");
-            }
+            FirebaseAnalytics.LogEvent(eventName, data);
         }
     }
 }

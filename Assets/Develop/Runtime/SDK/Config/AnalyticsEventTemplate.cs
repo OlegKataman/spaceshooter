@@ -21,8 +21,12 @@ namespace Develop.Runtime.SDK.Config
 
     public enum AnalyticsEvent
     {
-        EnemyDestroyed,
-        GameOver
+        LevelStart,
+        LevelFail,
+        LevelComplete,
+        LevelRetry,
+        AdWatched,
+        Purchase
     }
 
     public enum AnalyticsTarget

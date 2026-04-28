@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Develop.Runtime.SDK.Config;
@@ -23,17 +22,16 @@ namespace Develop.Runtime.SDK.Analytics
         {
             try
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: cancellationToken);
+                await UniTask.NextFrame();
                 
                 /*
-                var adjustConfig = new AdjustConfig(_appToken, AdjustEnvironment.Production);
-                adjustConfig.logLevel = AdjustLogLevel.Suppress;
-                adjustConfig.allowIdfaReading = false;
+                var config = new AdjustConfig(_appToken, AdjustEnvironment.Production);
+                config.logLevel = AdjustLogLevel.Suppress;
+                config.allowIdfaReading = false;
                 
-                Adjust.start(adjustConfig);*/
+                Adjust.start(config);*/
 
                 IsInitialized = true;
-                Debug.Log("[Adjust] Initialized");
             }
             catch (Exception e)
             {
@@ -41,7 +39,7 @@ namespace Develop.Runtime.SDK.Analytics
             }
         }
         
-        public void LogEvent(string eventName, Dictionary<string, object> parameters = null)
+        public void LogEvent(string eventName, params AnalyticsParam[] parameters)
         {
             if (!IsInitialized)
             {
@@ -51,21 +49,23 @@ namespace Develop.Runtime.SDK.Analytics
 
             try
             {
-                /*
-                var adjustEvent = new AdjustEvent(eventName);
-        
-                if (parameters != null)
-                     foreach (var p in parameters)
-                         adjustEvent.addCallbackParameter(p.Key, p.Value.ToString());
-        
-                 Adjust.trackEvent(adjustEvent);*/
-
                 Debug.Log($"[Adjust] Event: {eventName}");
+                
+                /*
+                var ev = new AdjustEvent(eventName);
+
+                if (parameters != null)
+                {
+                    foreach (var p in parameters)
+                        ev.addCallbackParameter(p.Key, p.Value?.ToString());
+                }
+
+                Adjust.trackEvent(ev);*/
 
                 if (parameters == null) return;
 
                 foreach (var p in parameters)
-                    Debug.Log($"  {p.Key}: {p.Value}");
+                    Debug.Log($"  {p.key}: {p.ToString()}");
             }
             catch (Exception e)
             {
