@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using Develop.Runtime.SDK.Analytics;
-using Develop.Runtime.SDK.Config;
 using VContainer;
 
 namespace SpaceShooter.Runtime.Service
@@ -18,11 +16,7 @@ namespace SpaceShooter.Runtime.Service
         {
             Score++;
             
-            _analytics.LogEvent(AnalyticsEvent.EnemyDestroyed,
-                new Dictionary<string, object>
-                {
-                    { "score", Score }
-                });
+            _analytics.EnemyDestroyed(Score);
             
             OnAddScore?.Invoke();
         }

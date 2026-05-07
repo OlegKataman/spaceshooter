@@ -1,10 +1,7 @@
 using System;
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Develop.Runtime.SDK.Config;
-using Firebase;
-using Firebase.Analytics;
 using UnityEngine;
 
 namespace Develop.Runtime.SDK.Analytics
@@ -20,6 +17,7 @@ namespace Develop.Runtime.SDK.Analytics
             {
                 await UniTask.NextFrame();
                 
+                /*
                 var status = await FirebaseApp.CheckAndFixDependenciesAsync();
 
                 if (status != DependencyStatus.Available)
@@ -29,7 +27,7 @@ namespace Develop.Runtime.SDK.Analytics
                 }
 
                 FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
-                FirebaseAnalytics.SetSessionTimeoutDuration(TimeSpan.FromMinutes(30));
+                FirebaseAnalytics.SetSessionTimeoutDuration(TimeSpan.FromMinutes(30));*/
                 
                 IsInitialized = true;
             }
@@ -48,21 +46,21 @@ namespace Develop.Runtime.SDK.Analytics
 
             if (parameters == null || parameters.Length == 0)
             {
-                FirebaseAnalytics.LogEvent(eventName);
+                //FirebaseAnalytics.LogEvent(eventName);
                 return;
             }
-
+/*
             var data = parameters.Select(p => p.type switch
             {
                 ParamType.Long   => new Parameter(p.key, p.AsLong()),
                 ParamType.Double => new Parameter(p.key, p.AsDouble()),
                 _                => new Parameter(p.key, p.AsString())
-            }).ToArray();
+            }).ToArray();*/
             
             foreach (var p in parameters)
                 Debug.Log($"  {p.key}: {p.ToString()}");
 
-            FirebaseAnalytics.LogEvent(eventName, data);
+            //FirebaseAnalytics.LogEvent(eventName, data);
         }
     }
 }

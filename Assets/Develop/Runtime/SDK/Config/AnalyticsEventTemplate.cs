@@ -26,7 +26,8 @@ namespace Develop.Runtime.SDK.Config
         LevelComplete,
         LevelRetry,
         AdWatched,
-        Purchase
+        Purchase,
+        EnemyDestroyed
     }
 
     public enum AnalyticsTarget

@@ -66,7 +66,7 @@ namespace SpaceShooter.Runtime.Core
                 _cancellationTokenSource?.Dispose();
                 _cancellationTokenSource = new CancellationTokenSource();
                 
-                _analytics.LogEvent(AnalyticsEvent.GameOver);
+                _analytics.LevelFail(0, "lose");
 
                 await _ads.ShowGameOverAdAsync(_cancellationTokenSource.Token);
                 

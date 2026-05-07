@@ -75,6 +75,13 @@ namespace Develop.Runtime.SDK.Analytics
                 AnalyticsParam.Of("currency", currency));
         }
 
+        public void EnemyDestroyed(int score)
+        {
+            LogEvent(
+                AnalyticsEvent.EnemyDestroyed, 
+                AnalyticsParam.Of("score", score));
+        }
+
         public void LogEvent(
             AnalyticsEvent eventType,
             params AnalyticsParam[] parameters)
