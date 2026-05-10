@@ -2,7 +2,6 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Develop.Runtime.SDK.Ads;
 using Develop.Runtime.SDK.Analytics;
-using Develop.Runtime.SDK.Config;
 using SpaceShooter.Runtime.Extensions;
 using SpaceShooter.Runtime.Service;
 using UnityEngine;
@@ -16,7 +15,7 @@ namespace SpaceShooter.Runtime.Core
         [Inject]
         private AnalyticsFacade _analytics;
         [Inject]
-        private AdsFacade _ads;
+        private IAdsProvider _ads;
         [Inject] 
         private AssetService _assetService;
         [Inject] 
@@ -42,6 +41,8 @@ namespace SpaceShooter.Runtime.Core
             
             async UniTask DoLoad()
             {
+                await _ads.Banner.ShowAsync(_cancellationTokenSource.Token);
+                
                 var prefab = await _assetService.LoadAsync<GameObject>("Ship");
                 var instance = Object.Instantiate(prefab, new Vector3(0, -1.85f, 0), Quaternion.identity);
                 
@@ -68,7 +69,7 @@ namespace SpaceShooter.Runtime.Core
                 
                 _analytics.LevelFail(0, "lose");
 
-                await _ads.ShowGameOverAdAsync(_cancellationTokenSource.Token);
+                await _ads.Interstitial.ShowAsync(_cancellationTokenSource.Token);
                 
                 _uiService.ShowGameOverFragment();
             }

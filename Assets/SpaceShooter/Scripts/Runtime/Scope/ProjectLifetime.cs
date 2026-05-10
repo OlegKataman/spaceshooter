@@ -31,8 +31,7 @@ namespace SpaceShooter.Runtime.Scope
             builder.Register<AnalyticsFacade>(Lifetime.Singleton);
 
             // Ads
-            builder.Register<IAdsService, AdMobAdsService>(Lifetime.Singleton);
-            builder.Register<AdsFacade>(Lifetime.Singleton);
+            builder.Register<IAdsProvider, AdMobProvider>(Lifetime.Singleton);
         }
     }
 }

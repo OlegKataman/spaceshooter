@@ -1,3 +1,6 @@
+using Cysharp.Threading.Tasks;
+using Develop.Runtime.SDK.Ads;
+using GoogleMobileAds.Api;
 using SpaceShooter.Runtime.Core;
 using SpaceShooter.Runtime.Extensions;
 using SpaceShooter.Runtime.Service;
@@ -14,6 +17,8 @@ namespace SpaceShooter.Runtime.UI
         
         [Inject] 
         private ScoreService _scoreService;
+        [Inject] 
+        private IAdsProvider _ads;
 
         private void Awake()
         {
@@ -48,6 +53,26 @@ namespace SpaceShooter.Runtime.UI
             var player = FindAnyObjectByType<Player>();
 
             _healthText.text = $"{player.Health} / 3";
+        }
+
+        public void RewardButtonClick()
+        {
+            DoAsync().Forget();
+            return;
+            
+            async UniTask DoAsync()
+            {
+                _ads.Rewarded.OnRewarded += GiveReward;
+                
+                await _ads.Rewarded.ShowAsync(destroyCancellationToken);
+                
+                _ads.Rewarded.OnRewarded -= GiveReward;
+            }
+        }
+
+        private void GiveReward(Reward reward)
+        {
+            Debug.Log($"Give reward {reward.Type} {reward.Amount}");
         }
     }
 }
