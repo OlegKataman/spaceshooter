@@ -9,6 +9,8 @@ namespace Develop.Runtime.SDK.Config
         [field: SerializeField] public string MetaAppId { get; private set; } = "placeholder_meta_app_id";
         [field: SerializeField] public string AdMobInterstitialId { get; private set; } = "ca-app-pub-3940256099942544/1033173712";
         [field: SerializeField] public string AdMobRewardedId { get; private set; } = "ca-app-pub-3940256099942544/5224354917";
+        [field: SerializeField] public string AdMobRewardedHammerId { get; private set; } = "ca-app-pub-3940256099942544/5224354917";
+        [field: SerializeField] public string AdMobRewardedTimeFreezeId { get; private set; } = "ca-app-pub-3940256099942544/5224354917";
         [field: SerializeField] public string AdMobBannerId { get; private set; } = "ca-app-pub-3940256099942544/6300978111";
     }
 }

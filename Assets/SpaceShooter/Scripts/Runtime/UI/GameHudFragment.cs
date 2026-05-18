@@ -62,11 +62,11 @@ namespace SpaceShooter.Runtime.UI
             
             async UniTask DoAsync()
             {
-                _ads.Rewarded.OnRewarded += GiveReward;
+                _ads.RewardedHammer.OnRewarded += GiveReward;
                 
-                await _ads.Rewarded.ShowAsync(destroyCancellationToken);
+                await _ads.RewardedHammer.ShowAsync(destroyCancellationToken);
                 
-                _ads.Rewarded.OnRewarded -= GiveReward;
+                _ads.RewardedHammer.OnRewarded -= GiveReward;
             }
         }
 

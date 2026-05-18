@@ -10,7 +10,7 @@ namespace Develop.Runtime.SDK.Ads
     /// Управляет жизненным циклом interstitial-объявления AdMob.
     /// Логика ретраев и предзагрузки наследуется из BaseAdUnit.
     /// </summary>
-    public sealed class InterstitialAdUnit : BaseAdUnit<InterstitialAd>
+    public sealed class InterstitialAdUnit : FullscreenAdUnit<InterstitialAd>
     {
         public InterstitialAdUnit(string adUnitId) : base(adUnitId) { }
 

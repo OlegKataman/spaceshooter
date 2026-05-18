@@ -12,7 +12,8 @@ namespace Develop.Runtime.SDK.Ads
         bool IsInitialized { get; }
 
         IAdUnit         Interstitial { get; }
-        IRewardedAdUnit Rewarded     { get; }
+        IRewardedAdUnit RewardedHammer     { get; }
+        IRewardedAdUnit RewardedTimeFreeze { get; }
         IBannerAdUnit Banner     { get; }
 
         /// <summary>

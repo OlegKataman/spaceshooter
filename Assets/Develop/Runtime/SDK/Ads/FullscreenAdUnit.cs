@@ -13,7 +13,7 @@ namespace Develop.Runtime.SDK.Ads
     /// Дочерние классы реализуют только загрузку конкретного типа рекламы
     /// и показ с ожиданием закрытия.
     /// </summary>
-    public abstract class BaseAdUnit<TAd> : IAdUnit where TAd : class
+    public abstract class FullscreenAdUnit<TAd> : IAdUnit where TAd : class
     {
         // ── Конфигурация ──────────────────────────────────────────────────────
 
@@ -51,7 +51,7 @@ namespace Develop.Runtime.SDK.Ads
 
         protected readonly string AdUnitId;
 
-        protected BaseAdUnit(string adUnitId)
+        protected FullscreenAdUnit(string adUnitId)
         {
             AdUnitId = adUnitId;
         }

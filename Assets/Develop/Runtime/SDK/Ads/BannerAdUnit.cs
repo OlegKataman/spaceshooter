@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using GoogleMobileAds.Api;
@@ -6,93 +5,82 @@ using UnityEngine;
 
 namespace Develop.Runtime.SDK.Ads
 {
-    /// <summary>
-    /// Управляет баннерной рекламой AdMob.
-    /// </summary>
-    public sealed class BannerAdUnit : BaseAdUnit<BannerView>, IBannerAdUnit
+    public sealed class BannerAdUnit : IBannerAdUnit
     {
-        private BannerView _activeBanner;
+        private BannerView _banner;
+        private readonly string _adUnitId;
         private readonly AdPosition _position;
         private readonly AdSize _adSize;
+        
+        private readonly CancellationTokenSource _cancellationTokenSource = new();
 
-        public BannerAdUnit(string adUnitId, 
-                           AdPosition position = AdPosition.Bottom, 
-                           AdSize adSize = null) 
-            : base(adUnitId)
+        public bool IsReady => _banner != null;
+
+        public BannerAdUnit(string adUnitId,
+            AdPosition position = AdPosition.Bottom,
+            AdSize adSize = null)
         {
+            _adUnitId = adUnitId;
             _position = position;
             _adSize = adSize ?? AdSize.Banner;
         }
 
-        // ── Загрузка ──────────────────────────────────────────────────────────
-        protected override async UniTask<(BannerView ad, string errorMessage)> LoadAdAsync(CancellationToken token)
+        private async UniTask LoadAsync(CancellationToken cancellationToken)
         {
-            var tcs = new UniTaskCompletionSource<(BannerView, string)>();
-            await using var reg = token.Register(() => tcs.TrySetCanceled(token));
+            if (cancellationToken.IsCancellationRequested) return;
 
-            var bannerView = new BannerView(AdUnitId, _adSize, _position);
+            var tcs = new UniTaskCompletionSource<BannerView>();
+
+            var bannerView = new BannerView(_adUnitId, _adSize, _position);
 
             bannerView.OnBannerAdLoaded += () =>
             {
-                LogAdSource(bannerView);
-                tcs.TrySetResult((bannerView, null));
+                bannerView.Hide();
+                tcs.TrySetResult(bannerView);
+                Debug.Log("[Banner] Loaded");
             };
 
-            bannerView.OnBannerAdLoadFailed += (error) =>
+            bannerView.OnBannerAdLoadFailed += error =>
             {
-                DestroyAd(bannerView); // уничтожаем при ошибке загрузки
-                tcs.TrySetResult((null, error.GetMessage()));
+                bannerView.Destroy();
+                tcs.TrySetResult(null);
+                Debug.Log($"[Banner] Load failed: {error.GetMessage()}");
             };
 
             bannerView.LoadAd(new AdRequest());
 
-            return await tcs.Task;
+            var result = await tcs.Task;
+            if (result != null)
+                _banner = result;
         }
 
-        protected override bool CanShow(BannerView ad) => ad != null;
-
-        protected override void DestroyAd(BannerView ad) => ad?.Destroy();
-
-        // ── Публичные методы для баннера ─────────────────────────────────────
-        public new async UniTask ShowAsync(CancellationToken cancellationToken = default)
+        public async UniTask ShowAsync(CancellationToken cancellationToken)
         {
-            if (IsDisposed) return;
+            if (_cancellationTokenSource.IsCancellationRequested) return;
 
-            await UniTask.SwitchToMainThread(cancellationToken);
+            if (_banner == null)
+            {
+                await LoadAsync(cancellationToken);
+            }
 
-            var banner = await TakeAdForShowAsync(cancellationToken);
-            if (banner == null) return;
+            _banner?.Show();
+        }
+
+        public void Hide() => _banner?.Hide();
+
+        public void Destroy()
+        {
+            _banner?.Destroy();
+            _banner = null;
+        }
+
+        public void Dispose()
+        {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
             
-            _activeBanner = banner;
-            banner.Show();
-
-            // После показа сразу предзагружаем следующий
-            StartPreload();
-        }
-
-        /// <summary>
-        /// Скрывает баннер (не уничтожает его)
-        /// </summary>
-        public void Hide() => _activeBanner?.Hide();
-
-        // ── Не используется для баннера ───────────────────────────────────────
-        protected override UniTask ShowAdAndWaitAsync(BannerView ad, CancellationToken token)
-        {
-            return UniTask.CompletedTask;
-        }
-
-        // ── Вспомогательные ───────────────────────────────────────────────────
-        private static void LogAdSource(BannerView banner)
-        {
-            try
-            {
-                var info = banner.GetResponseInfo()?.GetLoadedAdapterResponseInfo();
-                Debug.Log($"[Banner] Loaded via {info?.AdSourceName ?? "unknown"}");
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"[Banner] Failed to log ad source: {e.Message}");
-            }
+            _banner?.Destroy();
+            _banner = null;
         }
     }
 }

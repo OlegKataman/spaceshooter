@@ -7,5 +7,6 @@ namespace Develop.Runtime.SDK.Ads
     {
         new UniTask ShowAsync(CancellationToken cancellationToken = default);
         void Hide();
+        void Destroy();
     }
 }

@@ -23,13 +23,15 @@ namespace Develop.Runtime.SDK.Ads
         public bool IsInitialized { get; private set; }
 
         public IAdUnit         Interstitial => _interstitial;
-        public IRewardedAdUnit Rewarded     => _rewarded;
+        public IRewardedAdUnit RewardedHammer     => _rewardedHammer;
+        public IRewardedAdUnit RewardedTimeFreeze => _rewardedTimeFreeze;
         public IBannerAdUnit Banner => _banner;
 
         // ── Приватные поля ────────────────────────────────────────────────────
 
         private readonly InterstitialAdUnit _interstitial;
-        private readonly RewardedAdUnit     _rewarded;
+        private readonly RewardedAdUnit _rewardedHammer;
+        private readonly RewardedAdUnit _rewardedTimeFreeze;
         private readonly BannerAdUnit      _banner;
         private readonly INetworkService    _network;
 
@@ -48,7 +50,8 @@ namespace Develop.Runtime.SDK.Ads
         {
             _network = new NetworkService();
             _interstitial = new InterstitialAdUnit(settings.AdMobInterstitialId);
-            _rewarded     = new RewardedAdUnit(settings.AdMobRewardedId);
+            _rewardedHammer    = new RewardedAdUnit(settings.AdMobRewardedHammerId);
+            _rewardedTimeFreeze = new RewardedAdUnit(settings.AdMobRewardedTimeFreezeId);
             _banner = new BannerAdUnit(settings.AdMobBannerId);
         }
 
@@ -140,8 +143,8 @@ namespace Develop.Runtime.SDK.Ads
             Debug.Log("[AdMobProvider] Initialized");
 
             _interstitial.StartPreload();
-            _rewarded.StartPreload();
-            _banner.StartPreload();
+            _rewardedHammer.StartPreload();
+            _rewardedTimeFreeze.StartPreload();
         }
 
         // ── Ожидание сети ─────────────────────────────────────────────────────
@@ -180,7 +183,7 @@ namespace Develop.Runtime.SDK.Ads
 
         // ── Инициализация SDK ─────────────────────────────────────────────────
 
-        private async UniTask InitializeSdkAsync(CancellationToken token = default)
+        private async UniTask InitializeSdkAsync(CancellationToken token)
         {
             if (Interlocked.CompareExchange(ref _sdkInitSentFlag, 1, 0) == 0)
             {
@@ -190,6 +193,8 @@ namespace Develop.Runtime.SDK.Ads
                         () => _sdkInitTcs.TrySetCanceled(token));
                     
                     await RequestConsentAsync(token);
+                    
+                    await UniTask.SwitchToMainThread(token);
 
                     MobileAds.Initialize(status =>
                     {
@@ -197,7 +202,7 @@ namespace Develop.Runtime.SDK.Ads
                         _sdkInitTcs.TrySetResult();
                     });
 
-                    await _sdkInitTcs.Task; // ждём напрямую
+                    await _sdkInitTcs.Task;
                 }
                 catch (Exception ex)
                 {
@@ -238,7 +243,9 @@ namespace Develop.Runtime.SDK.Ads
             _disposeCts.Dispose();
 
             _interstitial.Dispose();
-            _rewarded.Dispose();
+            _rewardedHammer.Dispose();
+            _rewardedTimeFreeze.Dispose();
+            _banner.Dispose();
         }
     }
 }

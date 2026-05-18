@@ -13,7 +13,7 @@ namespace Develop.Runtime.SDK.Ads
     /// ShowAsync возвращает Reward если игрок досмотрел ролик до конца,
     /// либо null если закрыл раньше, показ упал или был отменён.
     /// </summary>
-    public sealed class RewardedAdUnit : BaseAdUnit<RewardedAd>, IRewardedAdUnit
+    public sealed class RewardedAdUnit : FullscreenAdUnit<RewardedAd>, IRewardedAdUnit
     {
         public RewardedAdUnit(string adUnitId) : base(adUnitId) { }
         
@@ -79,6 +79,8 @@ namespace Develop.Runtime.SDK.Ads
             if (ad == null) return null;
 
             var reward = await ShowRewardedAndWaitAsync(ad, linkedCts.Token);
+            
+            await UniTask.SwitchToMainThread();
 
             StartPreload();
 
@@ -128,9 +130,16 @@ namespace Develop.Runtime.SDK.Ads
                 // Callback вызывается только если игрок досмотрел до конца
                 ad.Show(reward =>
                 {
-                    earnedReward = reward;
-                    OnRewarded?.Invoke(reward);
-                    Debug.Log($"[Rewarded] Earned: {reward.Type} x{reward.Amount}");
+                    DoAsync().Forget();
+                    return;
+                    
+                    async UniTask DoAsync()
+                    {
+                        await UniTask.SwitchToMainThread(); 
+                        earnedReward = reward;
+                        OnRewarded?.Invoke(reward);
+                        Debug.Log($"[Rewarded] Earned: {reward.Type} x{reward.Amount}");
+                    }
                 });
             }
             catch (Exception e)
